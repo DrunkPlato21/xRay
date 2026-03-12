@@ -1,6 +1,6 @@
 # xRay
 
-**Advanced search tool for X.com** — build powerful search queries visually with a terminal-style interface. No frameworks, no dependencies, no build step — just open the HTML file.
+**Advanced X.com query constructor** — build powerful search queries visually with a terminal-style interface. No frameworks, no dependencies, no build step — just open the HTML file.
 
 ![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?style=flat-square)
 ![Single File](https://img.shields.io/badge/size-1%20file-brightgreen?style=flat-square)
