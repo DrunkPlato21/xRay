@@ -5,6 +5,8 @@
 ![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?style=flat-square)
 ![Single File](https://img.shields.io/badge/size-1%20file-brightgreen?style=flat-square)
 
+![xRay Screenshot](screengrab.png)
+
 ## Features
 
 - **Visual query builder** — fill in fields, get a properly formatted search query in real-time
