@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twitter Advanced Search Builder</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0a;
+  color: #33ff33;
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+header {
+  border-bottom: 1px solid #1a3a1a;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #33ff33;
+  letter-spacing: 1px;
+}
+
+header span {
+  color: #1a6a1a;
+  font-size: 12px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 57px);
+}
+
+.panel {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(100vh - 57px);
+}
+
+.panel-left {
+  border-right: 1px solid #1a3a1a;
+}
+
+h2 {
+  font-size: 13px;
+  color: #1a8a1a;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a3a1a;
+}
+
+h3 {
+  font-size: 12px;
+  color: #1a6a1a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 20px 0 10px;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: #2a8a2a;
+  margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  background: #0f0f0f;
+  border: 1px solid #1a3a1a;
+  color: #33ff33;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus, select:focus {
+  border-color: #33ff33;
+}
+
+input::placeholder { color: #1a4a1a; }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) hue-rotate(80deg);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
+}
+
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #2a8a2a;
+  cursor: pointer;
+  user-select: none;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #1a5a1a;
+  background: #0f0f0f;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"]:checked {
+  background: #1a3a1a;
+  border-color: #33ff33;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '>';
+  position: absolute;
+  top: -1px;
+  left: 2px;
+  color: #33ff33;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Preview area */
+.preview-box {
+  background: #050505;
+  border: 1px solid #1a3a1a;
+  border-radius: 3px;
+  padding: 16px;
+  min-height: 80px;
+  font-size: 13px;
+  color: #44ff44;
+  word-break: break-all;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  position: relative;
+}
+
+.preview-box::before {
+  content: '$ query>';
+  color: #1a5a1a;
+  margin-right: 6px;
+}
+
+.preview-box.empty { color: #1a4a1a; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+button {
+  background: #0f0f0f;
+  border: 1px solid #1a5a1a;
+  color: #33ff33;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+button:hover {
+  background: #1a3a1a;
+  border-color: #33ff33;
+}
+
+button.primary {
+  background: #1a3a1a;
+  border-color: #33ff33;
+}
+
+button.primary:hover {
+  background: #2a5a2a;
+}
+
+button.danger {
+  border-color: #5a1a1a;
+  color: #ff4444;
+}
+
+button.danger:hover {
+  background: #2a0a0a;
+  border-color: #ff4444;
+}
+
+/* Save dialog */
+.save-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.save-row input {
+  flex: 1;
+}
+
+/* Saved searches */
+.saved-list {
+  margin-top: 16px;
+}
+
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #1a2a1a;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  transition: border-color 0.15s;
+}
+
+.saved-item:hover {
+  border-color: #1a5a1a;
+}
+
+.saved-item .label {
+  flex: 1;
+  color: #33ff33;
+  font-size: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-item .label:hover {
+  text-decoration: underline;
+}
+
+.saved-item .query-peek {
+  flex: 2;
+  color: #1a5a1a;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-item button {
+  padding: 4px 8px;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1a3a1a;
+  border: 1px solid #33ff33;
+  color: #33ff33;
+  padding: 10px 18px;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 12px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.empty-state {
+  color: #1a4a1a;
+  font-size: 12px;
+  font-style: italic;
+  padding: 12px 0;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>> TWITTER SEARCH BUILDER</h1>
+  <span>// advanced query constructor</span>
+</header>
+
+<div class="container">
+  <div class="panel panel-left">
+    <h2>Search Parameters</h2>
+
+    <h3>Keywords</h3>
+    <div class="field">
+      <label>All these words</label>
+      <input type="text" id="allWords" placeholder="word1 word2 word3" oninput="update()">
+    </div>
+    <div class="field">
+      <label>Exact phrase</label>
+      <input type="text" id="exactPhrase" placeholder="exact phrase here" oninput="update()">
+    </div>
+    <div class="field">
+      <label>Any of these words</label>
+      <input type="text" id="anyWords" placeholder="word1 OR word2" oninput="update()">
+    </div>
+    <div class="field">
+      <label>None of these words (exclude)</label>
+      <input type="text" id="noneWords" placeholder="exclude1 exclude2" oninput="update()">
+    </div>
+
+    <h3>Accounts</h3>
+    <div class="row-3">
+      <div class="field">
+        <label>From account</label>
+        <input type="text" id="fromUser" placeholder="username" oninput="update()">
+      </div>
+      <div class="field">
+        <label>To account</label>
+        <input type="text" id="toUser" placeholder="username" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Mentioning</label>
+        <input type="text" id="mentionUser" placeholder="username" oninput="update()">
+      </div>
+    </div>
+    <div class="field">
+      <label>Exclude account</label>
+      <input type="text" id="excludeUser" placeholder="username (tweets from this account excluded)" oninput="update()">
+    </div>
+
+    <h3>Date Range</h3>
+    <div class="row">
+      <div class="field">
+        <label>Since</label>
+        <input type="date" id="sinceDate" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Until</label>
+        <input type="date" id="untilDate" oninput="update()">
+      </div>
+    </div>
+
+    <h3>Engagement Minimums</h3>
+    <div class="row-3">
+      <div class="field">
+        <label>Min likes</label>
+        <input type="number" id="minLikes" min="0" placeholder="0" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Min retweets</label>
+        <input type="number" id="minRetweets" min="0" placeholder="0" oninput="update()">
+      </div>
+      <div class="field">
+        <label>Min replies</label>
+        <input type="number" id="minReplies" min="0" placeholder="0" oninput="update()">
+      </div>
+    </div>
+
+    <h3>Language</h3>
+    <div class="field">
+      <select id="lang" onchange="update()">
+        <option value="">Any language</option>
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="pt">Portuguese</option>
+        <option value="it">Italian</option>
+        <option value="ja">Japanese</option>
+        <option value="ko">Korean</option>
+        <option value="zh">Chinese</option>
+        <option value="ar">Arabic</option>
+        <option value="hi">Hindi</option>
+        <option value="ru">Russian</option>
+        <option value="nl">Dutch</option>
+        <option value="sv">Swedish</option>
+        <option value="tr">Turkish</option>
+      </select>
+    </div>
+
+    <h3>Filters</h3>
+    <div class="checks">
+      <label><input type="checkbox" id="noRetweets" onchange="update()"> Exclude retweets</label>
+      <label><input type="checkbox" id="imagesOnly" onchange="update()"> Images only</label>
+      <label><input type="checkbox" id="videosOnly" onchange="update()"> Videos only</label>
+      <label><input type="checkbox" id="linksOnly" onchange="update()"> Links only</label>
+      <label><input type="checkbox" id="verifiedOnly" onchange="update()"> Verified only</label>
+    </div>
+  </div>
+
+  <div class="panel panel-right">
+    <h2>Query Preview</h2>
+    <div class="preview-box empty" id="preview">_</div>
+
+    <div class="actions">
+      <button class="primary" onclick="searchTwitter()">Search Twitter</button>
+      <button onclick="copyQuery()">Copy Query</button>
+      <button onclick="resetForm()">Clear All</button>
+    </div>
+
+    <div class="save-row">
+      <input type="text" id="saveLabel" placeholder="Search label..." onkeydown="if(event.key==='Enter')saveSearch()">
+      <button onclick="saveSearch()">Save</button>
+    </div>
+
+    <h2 style="margin-top: 28px;">Saved Searches</h2>
+    <div id="savedList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function buildQuery() {
+  const parts = [];
+
+  const allWords = $('allWords').value.trim();
+  if (allWords) parts.push(allWords);
+
+  const exact = $('exactPhrase').value.trim();
+  if (exact) parts.push(`"${exact}"`);
+
+  const any = $('anyWords').value.trim();
+  if (any) {
+    const orParts = any.split(/\s+/).join(' OR ');
+    parts.push(`(${orParts})`);
+  }
+
+  const none = $('noneWords').value.trim();
+  if (none) {
+    none.split(/\s+/).forEach(w => parts.push(`-${w}`));
+  }
+
+  const from = $('fromUser').value.trim().replace(/^@/, '');
+  if (from) parts.push(`from:${from}`);
+
+  const excludeU = $('excludeUser').value.trim().replace(/^@/, '');
+  if (excludeU) parts.push(`-from:${excludeU}`);
+
+  const to = $('toUser').value.trim().replace(/^@/, '');
+  if (to) parts.push(`to:${to}`);
+
+  const mention = $('mentionUser').value.trim().replace(/^@/, '');
+  if (mention) parts.push(`@${mention}`);
+
+  const since = $('sinceDate').value;
+  if (since) parts.push(`since:${since}`);
+
+  const until = $('untilDate').value;
+  if (until) parts.push(`until:${until}`);
+
+  const minL = parseInt($('minLikes').value) || 0;
+  if (minL > 0) parts.push(`min_faves:${minL}`);
+
+  const minR = parseInt($('minRetweets').value) || 0;
+  if (minR > 0) parts.push(`min_retweets:${minR}`);
+
+  const minP = parseInt($('minReplies').value) || 0;
+  if (minP > 0) parts.push(`min_replies:${minP}`);
+
+  const lang = $('lang').value;
+  if (lang) parts.push(`lang:${lang}`);
+
+  if ($('noRetweets').checked) parts.push('-filter:retweets');
+  if ($('imagesOnly').checked) parts.push('filter:images');
+  if ($('videosOnly').checked) parts.push('filter:videos');
+  if ($('linksOnly').checked) parts.push('filter:links');
+  if ($('verifiedOnly').checked) parts.push('filter:verified');
+
+  return parts.join(' ');
+}
+
+function update() {
+  const q = buildQuery();
+  const el = $('preview');
+  if (q) {
+    el.textContent = q;
+    el.classList.remove('empty');
+  } else {
+    el.textContent = '_';
+    el.classList.add('empty');
+  }
+}
+
+function searchTwitter() {
+  const q = buildQuery();
+  if (!q) return toast('Build a query first');
+  const url = `https://twitter.com/search?q=${encodeURIComponent(q)}&src=typed_query`;
+  window.open(url, '_blank');
+}
+
+function copyQuery() {
+  const q = buildQuery();
+  if (!q) return toast('Nothing to copy');
+  navigator.clipboard.writeText(q).then(() => toast('Copied to clipboard'));
+}
+
+function resetForm() {
+  document.querySelectorAll('.panel-left input[type="text"], .panel-left input[type="number"], .panel-left input[type="date"]').forEach(el => el.value = '');
+  document.querySelectorAll('.panel-left input[type="checkbox"]').forEach(el => el.checked = false);
+  $('lang').value = '';
+  update();
+}
+
+// Saved searches
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem('tw_searches') || '[]'); }
+  catch { return []; }
+}
+
+function setSaved(arr) {
+  localStorage.setItem('tw_searches', JSON.stringify(arr));
+}
+
+function saveSearch() {
+  const q = buildQuery();
+  if (!q) return toast('Build a query first');
+  const label = $('saveLabel').value.trim() || `Search ${new Date().toLocaleString()}`;
+  const saved = getSaved();
+  saved.unshift({ label, query: q, ts: Date.now() });
+  setSaved(saved);
+  $('saveLabel').value = '';
+  renderSaved();
+  toast('Search saved');
+}
+
+function loadSearch(idx) {
+  const saved = getSaved();
+  const item = saved[idx];
+  if (!item) return;
+
+  // Reset form first
+  resetForm();
+
+  // Parse the query back into fields — best effort
+  // For simplicity, just put the whole query in allWords and let user adjust
+  // Actually, let's do a smarter parse
+  let q = item.query;
+
+  // Extract operators
+  const extract = (regex) => {
+    const match = q.match(regex);
+    if (match) { q = q.replace(regex, '').trim(); return match[1]; }
+    return '';
+  };
+
+  const extractAll = (regex) => {
+    const matches = [];
+    let m;
+    while ((m = regex.exec(q)) !== null) matches.push(m[1]);
+    matches.forEach(() => q = q.replace(regex, '').trim());
+    return matches;
+  };
+
+  // Exact phrase
+  const exactMatch = q.match(/"([^"]+)"/);
+  if (exactMatch) {
+    $('exactPhrase').value = exactMatch[1];
+    q = q.replace(/"[^"]+"/, '').trim();
+  }
+
+  // OR group
+  const orMatch = q.match(/\(([^)]+)\)/);
+  if (orMatch) {
+    $('anyWords').value = orMatch[1].replace(/\s+OR\s+/g, ' ');
+    q = q.replace(/\([^)]+\)/, '').trim();
+  }
+
+  const exFrom = extract(/-from:(\S+)/);
+  if (exFrom) $('excludeUser').value = exFrom;
+
+  $('fromUser').value = extract(/from:(\S+)/);
+  $('toUser').value = extract(/to:(\S+)/);
+
+  const mentionMatch = q.match(/@(\S+)/);
+  if (mentionMatch && !q.includes('from:') && !q.includes('to:')) {
+    $('mentionUser').value = mentionMatch[1];
+    q = q.replace(/@\S+/, '').trim();
+  }
+
+  $('sinceDate').value = extract(/since:(\S+)/);
+  $('untilDate').value = extract(/until:(\S+)/);
+
+  const ml = extract(/min_faves:(\d+)/);
+  if (ml) $('minLikes').value = ml;
+  const mr = extract(/min_retweets:(\d+)/);
+  if (mr) $('minRetweets').value = mr;
+  const mp = extract(/min_replies:(\d+)/);
+  if (mp) $('minReplies').value = mp;
+
+  const langVal = extract(/lang:(\S+)/);
+  if (langVal) $('lang').value = langVal;
+
+  // Filters
+  if (q.includes('-filter:retweets')) { $('noRetweets').checked = true; q = q.replace('-filter:retweets', '').trim(); }
+  if (q.includes('filter:images')) { $('imagesOnly').checked = true; q = q.replace('filter:images', '').trim(); }
+  if (q.includes('filter:videos')) { $('videosOnly').checked = true; q = q.replace('filter:videos', '').trim(); }
+  if (q.includes('filter:links')) { $('linksOnly').checked = true; q = q.replace('filter:links', '').trim(); }
+  if (q.includes('filter:verified')) { $('verifiedOnly').checked = true; q = q.replace('filter:verified', '').trim(); }
+
+  // Excluded words
+  const excluded = [];
+  q = q.replace(/-(\S+)/g, (_, w) => { excluded.push(w); return ''; }).trim();
+  if (excluded.length) $('noneWords').value = excluded.join(' ');
+
+  // Remaining goes to allWords
+  if (q.trim()) $('allWords').value = q.trim();
+
+  update();
+  toast(`Loaded: ${item.label}`);
+}
+
+function deleteSearch(idx) {
+  const saved = getSaved();
+  saved.splice(idx, 1);
+  setSaved(saved);
+  renderSaved();
+}
+
+function renderSaved() {
+  const saved = getSaved();
+  const el = $('savedList');
+
+  if (!saved.length) {
+    el.innerHTML = '<div class="empty-state">No saved searches yet.</div>';
+    return;
+  }
+
+  el.innerHTML = saved.map((s, i) => `
+    <div class="saved-item">
+      <span class="label" onclick="loadSearch(${i})" title="Click to load">${esc(s.label)}</span>
+      <span class="query-peek" title="${esc(s.query)}">${esc(s.query)}</span>
+      <button class="danger" onclick="deleteSearch(${i})">X</button>
+    </div>
+  `).join('');
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// Init
+$('untilDate').value = new Date().toISOString().slice(0, 10);
+renderSaved();
+update();
+</script>
+</body>
+</html>
