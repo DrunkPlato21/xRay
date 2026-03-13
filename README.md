@@ -5,7 +5,9 @@
 ![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?style=flat-square)
 ![Single File](https://img.shields.io/badge/size-1%20file-brightgreen?style=flat-square)
 
-![xRay Screenshot](xray-redesign.png)
+![xRay — Visual query builder with real-time preview](screenshot-main.png)
+
+![xRay — Built-in operators reference](screenshot-operators.png)
 
 ## Features
 
